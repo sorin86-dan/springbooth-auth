@@ -14,6 +14,7 @@ public class DefaultAuthTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void checkMessageEndpoint() {
+        RestAssured.baseURI = "http://localhost:8081";
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
                 .body("{\"id\":\"OK\", \"db\":\"Redis\"}")
@@ -25,6 +26,7 @@ public class DefaultAuthTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void checkInvalidEndpoint() {
+        RestAssured.baseURI = "http://localhost:8081";
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
                 .body("{\"id\":\"OK\", \"db\":\"Redis\"}")
@@ -36,13 +38,14 @@ public class DefaultAuthTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void checkMessageEndpointInvalidParameter() {
+        RestAssured.baseURI = "http://localhost:8081";
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
                 .body("{\"id\":\"NOK\", \"db\":\"Redis\"}")
                 .post("/auth-message");
 
         assertEquals(response.getStatusCode(), 401);
-        assertEquals(response.getBody().asString(), "Authorization failed!");
+        assertEquals(response.getBody().asString(), "Authorization failed");
     }
 
 }
