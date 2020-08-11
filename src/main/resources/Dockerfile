@@ -1,7 +1,6 @@
-#Run first 'mvn package' to generate the jar file
+#Run first 'mvn package spring-boot:repackage' to generate the jar file and copy file in Dockerfile folder
 
-FROM openjdk:11-jdk-alpine
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} auth.jar
-ENTRYPOINT ["java","-jar","/auth.jar"]
+FROM openjdk:11
+COPY springboot-auth-1.0-SNAPSHOT.jar auth.jar
+ENTRYPOINT ["java","-jar","auth.jar"]
 EXPOSE 8081

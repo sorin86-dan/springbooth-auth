@@ -29,7 +29,7 @@ public class AuthController {
         var authBody = jsonBody.writeValueAsString(content);
 
         if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
-            return authService.redirectRequest("http://localhost:8080/db-message", authObject.getId(), authBody);
+            return authService.redirectRequest("http://172.0.0.3:8080/db-message", authObject.getId(), authBody);
         }
 
         return new ResponseEntity("Authorization failed", HttpStatus.UNAUTHORIZED);
