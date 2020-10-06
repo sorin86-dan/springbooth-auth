@@ -3,6 +3,7 @@ package com.testing.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testing.utils.AuthObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -19,7 +20,10 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
-    @PostMapping(value = "/auth-message")
+    @Value("${db.ip.address:localhost}")
+    private String dBIpAddress;
+
+    @PostMapping(value = "/get-message")
     public ResponseEntity getMessage(@RequestBody String body) throws IOException, URISyntaxException {
         var jsonBody = new ObjectMapper();
         var authObject = jsonBody.readValue(body, AuthObject.class);
@@ -29,9 +33,27 @@ public class AuthController {
         var authBody = jsonBody.writeValueAsString(content);
 
         if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
-            return authService.redirectRequest("http://172.0.0.3:8080/db-message", authObject.getId(), authBody);
+            return authService.redirectRequest("http://" + dBIpAddress + ":8082/get-db-message", authObject.getId(), authBody);
         }
 
         return new ResponseEntity("Authorization failed", HttpStatus.UNAUTHORIZED);
     }
+
+    @PostMapping(value = "/set-message")
+    public ResponseEntity setMessage(@RequestBody String body) throws IOException, URISyntaxException {
+        var jsonBody = new ObjectMapper();
+        var authObject = jsonBody.readValue(body, AuthObject.class);
+        var content = new HashMap<String, String>() {{
+            put("db", authObject.getDb());
+            put("message", authObject.getMessage());
+        }};
+        var authBody = jsonBody.writeValueAsString(content);
+
+        if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
+            return authService.redirectRequest("http://" + dBIpAddress + ":8082/set-db-message", authObject.getId(), authBody);
+        }
+
+        return new ResponseEntity("Authorization failed", HttpStatus.UNAUTHORIZED);
+    }
+
 }
