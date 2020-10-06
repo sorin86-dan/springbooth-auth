@@ -21,7 +21,7 @@ public class AuthController {
     AuthService authService;
 
     @Value("${db.ip.address:localhost}")
-    private String dBIpAddress;
+    private String dbIpAddress;
 
     @PostMapping(value = "/get-message")
     public ResponseEntity getMessage(@RequestBody String body) throws IOException, URISyntaxException {
@@ -33,7 +33,7 @@ public class AuthController {
         var authBody = jsonBody.writeValueAsString(content);
 
         if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
-            return authService.redirectRequest("http://" + dBIpAddress + ":8082/get-db-message", authObject.getId(), authBody);
+            return authService.redirectRequest("http://" + dbIpAddress + ":8082/get-db-message", authObject.getId(), authBody);
         }
 
         return new ResponseEntity("Authorization failed", HttpStatus.UNAUTHORIZED);
@@ -50,7 +50,7 @@ public class AuthController {
         var authBody = jsonBody.writeValueAsString(content);
 
         if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
-            return authService.redirectRequest("http://" + dBIpAddress + ":8082/set-db-message", authObject.getId(), authBody);
+            return authService.redirectRequest("http://" + dbIpAddress + ":8082/set-db-message", authObject.getId(), authBody);
         }
 
         return new ResponseEntity("Authorization failed", HttpStatus.UNAUTHORIZED);
