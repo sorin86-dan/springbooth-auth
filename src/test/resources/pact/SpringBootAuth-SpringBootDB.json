@@ -1,0 +1,90 @@
+{
+  "consumer": {
+    "name": "SpringBootAuth"
+  },
+  "interactions": [
+    {
+      "description": "a request to set data from DB with emtpy id",
+      "request": {
+        "body": {
+
+        },
+        "headers": {
+          "id": ""
+        },
+        "method": "POST",
+        "path": "/set-db-message"
+      },
+      "response": {
+        "body": "Authorization failed",
+        "status": 401
+      }
+    },
+    {
+      "description": "a request to set data from DB with invalid id",
+      "request": {
+        "body": {
+
+        },
+        "headers": {
+          "id": "DUMMY"
+        },
+        "method": "POST",
+        "path": "/set-db-message"
+      },
+      "response": {
+        "body": "Authorization failed",
+        "status": 401
+      }
+    },
+    {
+      "description": "a valid request to set data from DB",
+      "request": {
+        "body": {
+          "message": "string"
+        },
+        "generators": {
+          "body": {
+            "$.message": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "id": "OK"
+        },
+        "matchingRules": {
+          "body": {
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/set-db-message"
+      },
+      "response": {
+        "body": "Message updated successfully!",
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.2.10"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "SpringBootDB"
+  }
+}
