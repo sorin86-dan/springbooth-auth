@@ -2,11 +2,11 @@ package com.testing.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testing.utils.AuthObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import com.testing.services.AuthService;
 
@@ -32,7 +32,7 @@ public class AuthController {
         }};
         var authBody = jsonBody.writeValueAsString(content);
 
-        if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
+        if (StringUtils.isNotBlank(authObject.getId()) && "OK".equals(authObject.getId())) {
             return authService.redirectRequest("http://" + dbIpAddress + ":8082/get-db-message", authObject.getId(), authBody);
         }
 
@@ -49,7 +49,7 @@ public class AuthController {
         }};
         var authBody = jsonBody.writeValueAsString(content);
 
-        if (!StringUtils.isEmpty(authObject.getId()) && authObject.getId().equals("OK")) {
+        if (StringUtils.isNotBlank(authObject.getId()) && "OK".equals(authObject.getId())) {
             return authService.redirectRequest("http://" + dbIpAddress + ":8082/set-db-message", authObject.getId(), authBody);
         }
 
