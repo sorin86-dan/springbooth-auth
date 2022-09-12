@@ -1,6 +1,8 @@
 package com.testing.pact;
 
 import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.dsl.DslPart;
+import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -22,33 +24,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(PactConsumerTestExt.class)
 @PactDirectory("src/test/resources/pact")
-public class PactConsumerSetDBMessageTest {
+public class PactConsumerGetDBMessageTest {
 
     @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-    public RequestResponsePact setDbDataRule (PactDslWithProvider builder) {
+    public RequestResponsePact getDbDataRule (PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<>();
 
         headers.put("Content-Type", "application/json");
         headers.put("id", "OK");
 
-        PactDslJsonBody jsonBody = new PactDslJsonBody()
-                                        .stringType("message");
+        PactDslJsonBody jsonBody = new PactDslJsonBody().stringType("db", "Redis");
 
         return builder
-                .uponReceiving("a valid request to set data from DB")
+                .uponReceiving("a valid request to get data from DB")
                 .method("POST")
                 .headers(headers)
                 .body(jsonBody)
-                .path("/set-db-message")
+                .path("/get-db-message")
                 .willRespondWith()
-                .body("Message updated successfully!")
+                .body("The chosen database is: Redis")
                 .status(HttpStatus.OK.value())
                 .toPact();
     }
 
+
     @Test
-    @PactTestFor(pactMethods = "setDbDataRule", port = "8080", pactVersion = PactSpecVersion.V3)
-    public void testSetDbData(MockServer mockServer) {
+    @PactTestFor(pactMethods = "getDbDataRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    public void testGetDbData(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
         headers.put("Content-Type", "application/json");
@@ -58,23 +60,23 @@ public class PactConsumerSetDBMessageTest {
         Response response = RestAssured
                             .given()
                             .headers(headers)
-                            .body("{\"message\":\"Baza de date aleasa este: \"}")
+                            .body("{\"db\": \"Redis\"}")
                             .when()
-                            .post("/set-db-message");
+                            .post("/get-db-message");
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode(), "Wrong Status Code");
-        assertEquals("Message updated successfully!", response.getBody().asString(), "Wrong Message");
+        assertEquals("The chosen database is: Redis", response.getBody().asString(), "Wrong Message");
     }
 
 
     @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-    public RequestResponsePact setDbDataIdEmptyRule (PactDslWithProvider builder) {
+    public RequestResponsePact getDbDataIdEmptyRule (PactDslWithProvider builder) {
         return builder
-                .uponReceiving("a request to set data from DB with emtpy id")
+                .uponReceiving("a request to get data from DB with emtpy id")
                 .method("POST")
                 .headers("id", "")
                 .body("{}")
-                .path("/set-db-message")
+                .path("/get-db-message")
                 .willRespondWith()
                 .body("Authorization failed")
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -82,8 +84,8 @@ public class PactConsumerSetDBMessageTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "setDbDataIdEmptyRule", port = "8080", pactVersion = PactSpecVersion.V3)
-    public void testSetDbDataIdEmpty(MockServer mockServer) {
+    @PactTestFor(pactMethod = "getDbDataIdEmptyRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    public void testGetDbDataIdEmpty(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
         headers.put("Content-Type", "application/json");
@@ -95,7 +97,7 @@ public class PactConsumerSetDBMessageTest {
                 .headers(headers)
                 .body("{}")
                 .when()
-                .post("/set-db-message");
+                .post("/get-db-message");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode(), "Wrong Status Code");
         assertEquals("Authorization failed", response.getBody().asString(), "Wrong Message");
@@ -103,13 +105,13 @@ public class PactConsumerSetDBMessageTest {
 
 
     @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-    public RequestResponsePact setDbDataIdInvalidRule (PactDslWithProvider builder) {
+    public RequestResponsePact getDbDataIdInvalidRule (PactDslWithProvider builder) {
         return builder
-                .uponReceiving("a request to set data from DB with invalid id")
+                .uponReceiving("a request to get data from DB with invalid id")
                 .method("POST")
                 .headers("id", "DUMMY")
                 .body("{}")
-                .path("/set-db-message")
+                .path("/get-db-message")
                 .willRespondWith()
                 .body("Authorization failed")
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -117,8 +119,8 @@ public class PactConsumerSetDBMessageTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "setDbDataIdInvalidRule", port = "8080", pactVersion = PactSpecVersion.V3)
-    public void testSetDbDataIdInvalid(MockServer mockServer) {
+    @PactTestFor(pactMethod = "getDbDataIdInvalidRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    public void testGetDbDataIdInvalid(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
         headers.put("Content-Type", "application/json");
@@ -130,49 +132,10 @@ public class PactConsumerSetDBMessageTest {
                 .headers(headers)
                 .body("{}")
                 .when()
-                .post("/set-db-message");
+                .post("/get-db-message");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode(), "Wrong Status Code");
         assertEquals("Authorization failed", response.getBody().asString(), "Wrong Message");
     }
-
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "OK")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("The chosen database is: Redis")
-//                .status(HttpStatus.OK.value())
-//                .toPact();
-//    }
-//
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataIdEmptyRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("Authorization failed")
-//                .status(HttpStatus.UNAUTHORIZED.value())
-//                .toPact();
-//    }
-//
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataIdInvalidRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "DUMMY")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("Authorization failed")
-//                .status(HttpStatus.UNAUTHORIZED.value())
-//                .toPact();
-//    }
 
 }

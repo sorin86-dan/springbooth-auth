@@ -9,3 +9,5 @@ target
 
 *.tar
 *.jar
+
+src/test/resources/pact/*.json
