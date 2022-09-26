@@ -136,43 +136,4 @@ public class PactConsumerSetDBMessageTest {
         assertEquals("Authorization failed", response.getBody().asString(), "Wrong Message");
     }
 
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "OK")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("The chosen database is: Redis")
-//                .status(HttpStatus.OK.value())
-//                .toPact();
-//    }
-//
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataIdEmptyRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("Authorization failed")
-//                .status(HttpStatus.UNAUTHORIZED.value())
-//                .toPact();
-//    }
-//
-//    @Pact(provider = "SpringBootDB", consumer = "SpringBootAuth")
-//    public RequestResponsePact getDbDataIdInvalidRule (PactDslWithProvider builder) {
-//        return builder
-//                .uponReceiving("A request to set data from DB is done")
-//                .method("GET")
-//                .headers("id", "DUMMY")
-//                .path("/get-db-message")
-//                .willRespondWith()
-//                .body("Authorization failed")
-//                .status(HttpStatus.UNAUTHORIZED.value())
-//                .toPact();
-//    }
-
 }
