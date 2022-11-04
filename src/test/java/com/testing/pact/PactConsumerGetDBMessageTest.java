@@ -49,7 +49,7 @@ public class PactConsumerGetDBMessageTest {
 
 
     @Test
-    @PactTestFor(pactMethods = "getDbDataRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    @PactTestFor(pactMethods = "getDbDataRule", port = "8080")
     public void testGetDbData(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
@@ -84,7 +84,7 @@ public class PactConsumerGetDBMessageTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "getDbDataIdEmptyRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    @PactTestFor(pactMethod = "getDbDataIdEmptyRule", port = "8080")
     public void testGetDbDataIdEmpty(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
@@ -119,7 +119,7 @@ public class PactConsumerGetDBMessageTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "getDbDataIdInvalidRule", port = "8080", pactVersion = PactSpecVersion.V3)
+    @PactTestFor(pactMethod = "getDbDataIdInvalidRule", port = "8080")
     public void testGetDbDataIdInvalid(MockServer mockServer) {
         Map<String, String> headers = new HashMap<>();
 
