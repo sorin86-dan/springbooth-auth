@@ -34,19 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         ids = "com.testing:springboot-db:+:stubs:8090")
 public class SpringCloudContractTest {
     @Test
-    public void testSetDbMessage() throws Exception {
-        URI uri = new URI("http://localhost:8090/set-db-message");
-        HttpEntity<String> request = generateRequest("OK");
-        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Message updated successfully!", result.getBody());
-    }
-
-    @Test
     public void testSetDbMessageIdEmpty() throws Exception {
         URI uri = new URI("http://localhost:8090/set-db-message");
-        HttpEntity<String> request = generateRequest("");
+        HttpEntity<String> request = generateRequest("", "{\"message\": \"Baza de date aleasa: \"}");
         ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
@@ -56,21 +46,80 @@ public class SpringCloudContractTest {
     @Test
     public void testSetDbMessageIdInvalid() throws Exception {
         URI uri = new URI("http://localhost:8090/set-db-message");
-        HttpEntity<String> request = generateRequest("DUMMY");
+        HttpEntity<String> request = generateRequest("DUMMY", "{\"message\": \"Baza de date aleasa: \"}");
         ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
         assertEquals("Authorization failed", result.getBody());
     }
 
+    @Test
+    public void testSetDbMessage() throws Exception {
+        URI uri = new URI("http://localhost:8090/set-db-message");
+        HttpEntity<String> request = generateRequest("OK", "{\"message\": \"Baza de date aleasa: \"}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Message updated successfully!", result.getBody());
+    }
+
+    @Test
+    public void testSetDbMessageInvalidBody() throws Exception {
+        URI uri = new URI("http://localhost:8090/set-db-message");
+        HttpEntity<String> request = generateRequest("OK", "{\"message\": null}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Missing 'message' field!", result.getBody());
+    }
+
+    @Test
+    public void testGetDbMessageIdEmpty() throws Exception {
+        URI uri = new URI("http://localhost:8090/get-db-message");
+        HttpEntity<String> request = generateRequest("", "{\"db\": \"Redis\"}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
+        assertEquals("Authorization failed", result.getBody());
+    }
+
+    @Test
+    public void testGetDbMessageIdInvalid() throws Exception {
+        URI uri = new URI("http://localhost:8090/get-db-message");
+        HttpEntity<String> request = generateRequest("DUMMY", "{\"db\": \"Redis\"}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
+        assertEquals("Authorization failed", result.getBody());
+    }
+
+    @Test
+    public void testGetDbMessage() throws Exception {
+        URI uri = new URI("http://localhost:8090/get-db-message");
+        HttpEntity<String> request = generateRequest("OK", "{\"db\": \"Redis\"}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Message updated successfully!", result.getBody());
+    }
+
+    @Test
+    public void testGetDbMessageInvalidBody() throws Exception {
+        URI uri = new URI("http://localhost:8090/get-db-message");
+        HttpEntity<String> request = generateRequest("OK", "{\"db\": null}");
+        ResponseEntity<String> result = new TestRestTemplate().postForEntity(uri, request, String.class);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Missing 'db' field!", result.getBody());
+    }
 
 
     @NotNull
-    private HttpEntity<String> generateRequest(String ok) {
+    private HttpEntity<String> generateRequest(String ok, String jsonBody) {
         HttpHeaders headers = new HttpHeaders();
+
         headers.set("Content-Type", "application/json");
         headers.set("id", ok);
-        String jsonBody = "{\"message\":\"Baza de date aleasa: \"}";
         return new HttpEntity<>(jsonBody, headers);
     }
 }

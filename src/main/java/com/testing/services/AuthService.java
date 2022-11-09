@@ -1,7 +1,6 @@
 package com.testing.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,18 @@ import java.net.URISyntaxException;
 @Service
 public class AuthService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
-
     public ResponseEntity redirectRequest (String url, String id, String body) throws URISyntaxException {
         RestTemplate restTemplate = new RestTemplate();
         RequestEntity request = RequestEntity.post(new URI(url)).header("id", id).body(body);
+        ResponseEntity response = restTemplate.exchange(request, String.class);
 
-        return restTemplate.exchange(request, String.class);
+        if(response.getBody().toString().contains("Authorization")) {
+            return new ResponseEntity(response.getBody(), HttpStatus.UNAUTHORIZED);
+        }
+        if(response.getBody().toString().contains("Missing")) {
+            return new ResponseEntity(response.getBody(), HttpStatus.BAD_REQUEST);
+        }
+
+        return response;
     }
-
 }
